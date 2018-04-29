@@ -1,15 +1,13 @@
-# ----------------------------------------------------------------------------
-# Plotting functions 
-# ----------------------------------------------------------------------------
-
-
-# ----------------------------------------------------------------------------
-# Forest plot functions 
-# ----------------------------------------------------------------------------
-facet_var_gen <- function (dat, col_num, group) {
-	#Generates a vector that can be added to a dataframe and used to split plots up 
-	#group_num is more than 1 if you have multiple data points per categorical variable
+#' Make facets for forest plots
+#' 
+#' Generates a vector that can be added to a data.frame and split forest plots up
+#' 
+#' @param dat a data.frame that will be used for the forest plot
+#' @param col_num number of columns the plot will be
+#' @param group grouping variable 
+facet_var_gen <- function (dat, col_num, group = NA) {
 	group_num <- length(unique(dat[[group]]))
+	if (group_num == 0) group_num <- 1
 	x <- nrow(dat) / group_num
 	if (nrow(dat) %% 2 != 0) {
 		facet_var <- rep(
@@ -23,7 +21,7 @@ facet_var_gen <- function (dat, col_num, group) {
 
 
 forest_plot <- function(dat, col_num, group = NA, y_axis, units = NULL, title = NULL, scale = 1, null_at = 1, text_size = "norm", meta = FALSE) {
-#Format of data for plot (doesn't matter where in the data frame these things are and can have extra columns)
+# Format of data for plot (doesn't matter where in the data frame these things are and can have extra columns)
 # y_axis_var Estimate 2.5 % 97.5 % 
 # ----------  ----     --    ---
 # ----------  ----     --    --- 
