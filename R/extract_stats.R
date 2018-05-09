@@ -36,4 +36,12 @@ extract_sum_stats <- function(dat, min = T, first_quartile = T, med = T, mean = 
   return(sum_tab)
 }
 
-
+#' Check if a vector is binary
+#' 
+#' @param v vector
+#' @export
+#' @return TRUE or FALSE depending on whether the vector is binary
+is.binary <- function(v) {
+  x <- unique(v)
+  length(x) - sum(is.na(x)) == 2L
+}
