@@ -32,3 +32,5 @@ make_pretty_lm_table <- function(dat, voi, est = "Estimate", se = "StdErr", uppe
 	return(out)
 }
 
+# Function for numbers in rmarkdown
+comma <- function(x) format(x, digits = 2, big.mark = ",")
