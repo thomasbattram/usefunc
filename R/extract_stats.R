@@ -48,32 +48,27 @@ is.binary <- function(v) {
 
 
 #' linear regression function
-#' 
-#' @param outcome names of outcomes
-#' @param exposure names of exposures
-#' @param dataset dataset containing the outcome and exposure data
-#' @param covariate names of covariates
-#' @export
-#' @return data.frame containing outcomes, estimate, se, p and CIs from lm()
-linear_regress <- function(outcome, exposure, dataset, covariate = NULL) 
-{ 
-  
-  tx <- dataset
-
-  dat <- numeric()
-  fom <- formula(paste("out", paste(c(exposure, covariate), collapse = '+'))) 
-  
-  for (i in 1:length(outcome))  
-  { 
-    out <- [[outcome[i]]]
-    fit <- lm(fom, data = tx) 
-    temp <- c(summary(fit)$coef[exposure, ], confint(fit)[exposure, ]); 
-    add <- rbind(add, temp);  
-  }   
-  add <- data.frame(add, check.names = F) %>%
+#'  
+#' @param fit regression output from lm() function
+#' @param outcome the outcome variable
+#' @param exposure the exposure variable 
+#' @export 
+#' @return data.frame containing outcomes, estimate, se, p and CIs, residuals and the input
+summarise_lm <- function(fit, outcome, exposure) {
+  stopifnot(class(fit) == "lm")
+  summ <- as.matrix(c(summary(fit)$coef[exposure, ], confint(fit)[exposure, ]))
+  summ <- as.data.frame(t(summ))
+  sum_tab <- summ %>%
     mutate(outcome = outcome) %>%
     dplyr::select(-`t value`) %>%
     dplyr::select(outcome, everything())
-  colnames(add) <- c("outcome", "estimate", "se", "p", "CI_low", "CI_up") 
-  return(add)
-} 
+
+  colnames(sum_tab) <- c("outcome", "estimate", "se", "p", "CI_low", "CI_up") 
+  
+  res <- resid(fit)
+  covars <- names(fit$coef)[!(names(fit$coef) %in% c("(Intercept)", exposure))]
+
+  out <- list(sum_tab, res, covars, fit)
+  names(out) <- c("summary_data", "residuals", "covars", "fit")
+  return(out)
+}
