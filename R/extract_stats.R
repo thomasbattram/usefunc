@@ -47,7 +47,7 @@ is.binary <- function(v) {
 }
 
 
-#' linear regression function
+#' Extract summary stats from lm()
 #'  
 #' @param fit regression output from lm() function
 #' @param outcome the outcome variable
@@ -56,14 +56,14 @@ is.binary <- function(v) {
 #' @return data.frame containing outcomes, estimate, se, p and CIs, residuals and the input
 summarise_lm <- function(fit, outcome, exposure) {
   stopifnot(class(fit) == "lm")
-  summ <- as.matrix(c(summary(fit)$coef[exposure, ], confint(fit)[exposure, ]))
+  summ <- as.matrix(c(summary(fit)$coef[exposure, ], confint(fit)[exposure, ], summary(fit)$adj.r.squared))
   summ <- as.data.frame(t(summ))
   sum_tab <- summ %>%
     mutate(outcome = outcome) %>%
     dplyr::select(-`t value`) %>%
     dplyr::select(outcome, everything())
 
-  colnames(sum_tab) <- c("outcome", "estimate", "se", "p", "CI_low", "CI_up") 
+  colnames(sum_tab) <- c("outcome", "estimate", "se", "p", "CI_low", "CI_up", "adj_r2") 
   
   res <- resid(fit)
   covars <- names(fit$coef)[!(names(fit$coef) %in% c("(Intercept)", exposure))]
