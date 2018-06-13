@@ -46,6 +46,16 @@ is.binary <- function(v) {
   length(x) - sum(is.na(x)) == 2L
 }
 
+#' Check if a vector is monomorphic
+#' 
+#' @param v vector
+#' @export
+#' @return TRUE or FALSE depending on whether the vector is monomorphic
+is.monomorphic <- function(v) {
+  x <- unique(v)
+  length(x) - sum(is.na(x)) == 1L
+}
+
 
 #' Extract summary stats from lm()
 #'  
