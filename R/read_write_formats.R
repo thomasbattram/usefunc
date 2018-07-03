@@ -3,15 +3,25 @@
 #' <full description>
 #'
 #' @param rootname Name of files. e.g. if the GRM files are data.grm.bin, data.grm.id and data.grm.N.bin then supply "data" as the argument
-#'
+#' @param n.file Write out grm.N.bin file - not always needed 
+#' 
 #' @export
 #' @return List with elements:
 #'         grm: data frame of GRM in long format
 #'         id: data frame of IDs
-read_grm <- function(rootname)
+read_grm <- function(rootname, n.file = FALSE)
 {
+	if (!n.file) {
+		print(".grm.N.bin file not being read - likely unnecessary")
+	} else {
+		n.file.name <- paste(rootname, ".grm.N.bin", sep="")
+		cat("Reading N\n")
+		n.file <- file(n.file.name, "rb")
+		N <- readBin(n.file, n=n*(n+1)/2, what=numeric(0), size=4)
+		close(n.file)
+	}
+
 	bin.file.name <- paste(rootname, ".grm.bin", sep="")
-	n.file.name <- paste(rootname, ".grm.N.bin", sep="")
 	id.file.name <- paste(rootname, ".grm.id", sep="")
 
 	cat("Reading IDs\n")
@@ -21,10 +31,6 @@ read_grm <- function(rootname)
 	bin.file <- file(bin.file.name, "rb")
 	grm <- readBin(bin.file, n=n*(n+1)/2, what=numeric(0), size=4)
 	close(bin.file)
-	cat("Reading N\n")
-	n.file <- file(n.file.name, "rb")
-	N <- readBin(n.file, n=n*(n+1)/2, what=numeric(0), size=4)
-	close(n.file)
 
 	cat("Creating data frame\n")
 	l <- list()
@@ -34,8 +40,11 @@ read_grm <- function(rootname)
 	}
 	col1 <- rep(1:n, 1:n)
 	col2 <- unlist(l)
-	grm <- data.frame(id1=col1, id2=col2, N=N, grm=grm)	
-
+	if (n.file) {
+		grm <- data.frame(id1=col1, id2=col2, N=N, grm=grm)	
+	} else {
+		grm <- data.frame(id1=col1, id2=col2, grm=grm)	
+	}
 	ret <- list()
 	ret$grm <- grm
 	ret$id <- id
@@ -66,9 +75,18 @@ make_grm_matrix <- function(grm)
 #'
 #' @param grm Output from \link{readGRM}
 #' @param rootname
+#' @param n.file Write out grm.N.bin file - not always needed
 #' @export
-write_grm <- function(grm, rootname)
+write_grm <- function(grm, rootname, n.file = FALSE)
 {
+	if (!n.file) {
+		print(".grm.N.bin file not being written - likely unnecessary")
+	} else {
+		n.file.name <- paste(rootname, ".grm.N.bin", sep="")
+		n.file <- file(n.file.name, "wb")
+		writeBin(grm$grm$N, n.file, size=4)
+		close(n.file)
+	}
 	bin.file.name <- paste(rootname, ".grm.bin", sep="")
 	n.file.name <- paste(rootname, ".grm.N.bin", sep="")
 	id.file.name <- paste(rootname, ".grm.id", sep="")
@@ -77,9 +95,6 @@ write_grm <- function(grm, rootname)
 	bin.file <- file(bin.file.name, "wb")
 	writeBin(grm$grm$grm, bin.file, size=4)
 	close(bin.file)
-	n.file <- file(n.file.name, "wb")
-	writeBin(grm$grm$N, n.file, size=4)
-	close(n.file)
 }
 
 #' Check if files exist
