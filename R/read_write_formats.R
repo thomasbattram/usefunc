@@ -148,7 +148,7 @@ check_rootname <- function(rootname, software="plink", suffix="all")
 #' @return Data frame
 read_bim <- function(rootname)
 {
-	nom <- checkRootname(rootname, "plink", "bim")
+	nom <- check_rootname(rootname, "plink", "bim")
 	bim <- read.table(nom, colClasses=c("character", "character", "numeric", "numeric", "character", "character"))
 	names(bim) <- c("CHR", "SNP", "GD", "BP", "A1", "A2")
 	return(bim)	
@@ -162,7 +162,7 @@ read_bim <- function(rootname)
 #' @return Data frame
 read_fam <- function(rootname)
 {
-	nom <- checkRootname(rootname, "plink", "fam")
+	nom <- check_rootname(rootname, "plink", "fam")
 	fam <- read.table(nom, colClasses=c("character", "character", "character", "character", "character", "character"))
 	names(fam) <- c("FID", "IID", "FATHER", "MOTHER", "SEX", "PHEN")
 	return(fam)	
