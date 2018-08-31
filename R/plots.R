@@ -9,13 +9,19 @@ facet_var_gen <- function (dat, col_num, group = NA) {
 	group_num <- length(unique(dat[[group]]))
 	if (group_num == 0) group_num <- 1
 	x <- nrow(dat) / group_num
-	if (nrow(dat) %% 2 != 0) {
-		facet_var <- rep(
-			c(rep(1:(col_num-1), each = ceiling(x / col_num)),
-			rep(col_num, times = x - (ceiling(x / col_num) * (col_num - 1)))),
-			times = group_num)
+	if (x %% 1 != 0) stop("Make sure there is the same number of things in each group - put NA rows if needed")
+	if (col_num == 1) {
+		facet_var <- rep(1, times = nrow(dat))
 	} else {
-		facet_var <- rep(rep(1:col_num, each = ceiling(x / col_num)), times = group_num)
+		if (nrow(dat) %% 2 != 0) {
+			facet_var <- rep(
+				c(rep(1:(col_num-1), each = round(x / col_num)),
+				rep(col_num, times = x - (round(x / col_num) * (col_num - 1)))),
+				times = group_num)
+		} else {
+			fv <- rep(1:(col_num - 1), each = round(x / col_num))
+			facet_var <- c(fv, rep(col_num, times = nrow(dat) - length(fv)))
+		}
 	}
 }
 
