@@ -20,13 +20,13 @@ facet_var_gen <- function (dat, col_num, group = NA) {
 				times = group_num)
 		} else {
 			fv <- rep(1:(col_num - 1), each = round(x / col_num))
-			facet_var <- c(fv, rep(col_num, times = nrow(dat) - length(fv)))
+			facet_var <- rep(c(fv, rep(col_num, times = (nrow(dat) - length(fv) * group_num)/group_num)), times = group_num)
 		}
 	}
 }
 
 
-forest_plot <- function(dat, col_num, group = NA, y_axis, units = NULL, title = NULL, scale = 1, null_at = 1, text_size = "norm", meta = FALSE) {
+forest_plot <- function(dat, col_num, group = NA, y_axis, units = NULL, title = NULL, scale = 1, null_at = 1, text_size = "norm", meta = FALSE, f_var = "facet_var") {
 # Format of data for plot (doesn't matter where in the data frame these things are and can have extra columns)
 # y_axis_var Estimate 2.5 % 97.5 % 
 # ----------  ----     --    ---
@@ -70,12 +70,12 @@ met_num <- nrow(dat)/group_num/col_num
 					seq(from = 1.5, to = ((nrow(dat) - (ceiling(met_num) * group_num * (col_num - 1))) / group_num) + 1, by = 1)),
 					times = group_num),
 	            col = rep(c(0,1), length.out = nrow(dat)),
-	            facet_var = facet_var)
+	            facet_var = dat[[f_var]])
 	} else {
 		shading <- data.frame(min = rep(seq(from = 0.5, to = met_num, by = 1), times = col_num * group_num),
 	           	max = rep(seq(from = 1.5, to = met_num + 1, by = 1), times = col_num * group_num),
 	           	col = rep(c(0,1), length.out = nrow(dat)),
-	            facet_var = facet_var)
+	            facet_var = dat[[f_var]])
 	}
 
 	# Minimum and maximum x values
@@ -102,8 +102,8 @@ met_num <- nrow(dat)/group_num/col_num
 	plots <- list()
 
 	for (i in 1:col_num) {
-		test_forest_dat <- filter(dat, facet_var == i)
-		test_shading_dat <- filter(shading, facet_var == i)
+		test_forest_dat <- dplyr::filter(dat, facet_var == i)
+		test_shading_dat <- dplyr::filter(shading, facet_var == i)
 		
 		test_forest_dat[[y_axis_var]] <- factor(test_forest_dat[[y_axis_var]], levels = test_forest_dat[[y_axis_var]][1:(nrow(test_forest_dat) / group_num)])
 
