@@ -82,3 +82,33 @@ summarise_lm <- function(fit, outcome, exposure) {
   names(out) <- c("summary_data", "residuals", "covars", "fit")
   return(out)
 }
+
+#' Extract summary stats from glm() when doing logistic regression
+#'  
+#' @param fit regression output from glm() function
+#' @param outcome the outcome variable
+#' @param exposure the exposure variable 
+#' @export 
+#' @return data.frame containing outcomes, estimate, se, p and CIs, residuals and the input
+summarise_glm <- function(fit, outcome, exposure) {
+  stopifnot(class(fit)[1] == "glm")
+  summ <- as.matrix(c(summary(fit)$coef[exposure, ], confint(fit)[exposure, ], summary(fit)$adj.r.squared))
+  summ <- as.data.frame(t(summ))
+  sum_tab <- summ %>%
+    mutate(outcome = outcome) %>%
+    dplyr::select(-`z value`) %>%
+    dplyr::select(outcome, everything())
+
+  colnames(sum_tab) <- c("outcome", "estimate", "se", "p", "CI_low", "CI_up") 
+  
+  res <- resid(fit)
+  covars <- names(fit$coef)[!(names(fit$coef) %in% c("(Intercept)", exposure))]
+
+  out <- list(sum_tab, res, covars, fit)
+  names(out) <- c("summary_data", "residuals", "covars", "fit")
+  return(out)
+}
+fit <- x
+fit <- temp
+exposure <- "rs425277_T"
+outcome <- "chd"
