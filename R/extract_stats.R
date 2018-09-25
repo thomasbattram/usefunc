@@ -108,7 +108,3 @@ summarise_glm <- function(fit, outcome, exposure) {
   names(out) <- c("summary_data", "residuals", "covars", "fit")
   return(out)
 }
-fit <- x
-fit <- temp
-exposure <- "rs425277_T"
-outcome <- "chd"
