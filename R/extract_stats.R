@@ -12,17 +12,17 @@ getmode <- function(v) {
 #' 
 #' @param dat numeric vector
 #' @param min extract minimum value
-#' @param first_quartile extract first quartile
+#' @param q1 extract first quartile
 #' @param med extract median
-#' @param third_quartile extract third quartile
+#' @param q3 extract third quartile
 #' @param max extract maximum value
 #' @param na extract number of NA values
 #' @export
 #' @return data.frame of summary stats selected
-extract_sum_stats <- function(dat, min = T, first_quartile = T, med = T, mean = T, third_quartile = T, max = T, na = T) {
-  sum_tab <- data.frame(min = NA, first_quartile = NA, med = NA, mean = NA, third_quartile = NA, max = NA, na = NA)
+extract_sum_stats <- function(dat, min = T, q1 = T, med = T, mean = T, q3 = T, max = T, na = T) {
+  sum_tab <- data.frame(min = NA, q1 = NA, med = NA, mean = NA, q3 = NA, max = NA, na = NA)
 
-  y <- c(sum(min), sum(first_quartile), sum(med), sum(mean), sum(third_quartile), sum(max), sum(na))
+  y <- c(sum(min), sum(q1), sum(med), sum(mean), sum(q3), sum(max), sum(na))
   names(y) <- 1:7
   y <- y[y == 1]
 
