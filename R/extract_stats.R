@@ -28,7 +28,7 @@ extract_sum_stats <- function(dat, min = T, q1 = T, med = T, mean = T, q3 = T, m
 
   for (i in names(y)) {
     j <- as.numeric(i)
-    sum_tab[1, j] <- summary(dat)[[j]]
+    sum_tab[1, j] <- summary(dat)[j]
   }
   
   sum_tab <- sum_tab[, !is.na(sum_tab)]
