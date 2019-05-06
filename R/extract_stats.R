@@ -112,12 +112,14 @@ summarise_glm <- function(fit, outcome, exposure) {
 #' Function for dealing with error messages when using tryCatch
 #' 
 #' @param e error message from function 
-#' @param print print the error message 
+#' @param r_msg print the error message given by the function
+#' @param user_msg a message given by the user
 #' @param return what should be returned if there is an error 
 #' @export
 #' @return what is chosen by the user to be returned, default = NA 
-err_msg <- function(e, print = TRUE, return = NA) {
-  if (print) print(e)
+err_msg <- function(e, r_msg = TRUE, user_msg = NULL, return = NA) {
+  if (r_msg) print(e)
+  if (!is.null(user_msg)) print(user_msg)
   return(return)
 }
 
