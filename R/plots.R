@@ -155,10 +155,18 @@ met_num <- nrow(dat)/group_num/col_num
 #' @param df data.frame containing your results
 #' @param threshold the P value threshold
 #' @param hlight a vector containing any SNPs that need highlighting
-#' @param col colour palette used
-#' @param ylims limits on y-axis
+#' @param col colours for the plot
 #' @param title title of the plot
-gg.manhattan <- function(df, threshold, hlight, col = brewer.pal(9, "Greys")[c(3,7)], ylims, title, SNP = "SNP", CHR = "CHR", BP = "BP", P = "P", sig = 1e-8, sugg = 1e-6){
+#' @param SNP name of the column corresponding to SNPs
+#' @param CHR name of the column corresponding to chromosome number
+#' @param BP name of the column corresponding to base pair
+#' @param P name of the column corresponding to p value
+#' @param sig the "significance threshold"
+#' @param sugg the "suggestive significance threshold"
+#' @param lab whether or not to add labels to the sites on the plot
+gg.manhattan <- function(df, threshold, hlight, col = brewer.pal(9, "Greys")[c(4,7)],
+						 title, SNP = "SNP", CHR = "CHR", BP = "BP", P = "P",
+						 sig = 1e-8, sugg = 1e-6, lab = TRUE){
   # format df
   df.tmp <- df %>% 
     
@@ -178,20 +186,28 @@ gg.manhattan <- function(df, threshold, hlight, col = brewer.pal(9, "Greys")[c(3
     mutate( BPcum = !! as.name(BP) + tot) %>%
     
     # Add highlight and annotation information
-    mutate( is_highlight = ifelse(!! as.name(SNP) %in% hlight, "yes", "no")) %>%
-    mutate( is_annotate = ifelse(!! as.name(P) < threshold, "yes", "no"))
+    mutate( is_highlight := ifelse(!! as.name(SNP) %in% hlight, "yes", "no")) %>%
+    mutate( is_annotate := ifelse(!! as.name(P) < threshold, "yes", "no"))
+
+    # change CHR to a factor
+    df.tmp[[CHR]] <- as.factor(df.tmp[[CHR]])
+
   
+  # for the colour later on
+  chr_n <- length(unique(df.tmp[[CHR]]))
+  col_n <- length(col)
+
   # get chromosome center positions for x-axis
   axisdf <- df.tmp %>% group_by_(CHR) %>% summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
-  
-  ggplot(df.tmp, aes(x = BPcum, y = -log10(get(P)))) +
-    # Show all points
-    geom_point(aes_string(color = as.factor(CHR)), alpha=0.8, size=2) +
-    scale_color_manual(values = rep(col, 24)) +
 
-    # custom X axis:
+  p <- ggplot(df.tmp, aes(x = BPcum, y = -log10(get(P)))) +
+    # Show all points
+    geom_point(aes_string(color = CHR), alpha=0.8, size=2) +
+    scale_color_manual(values = rep(col, chr_n/col_n)) +
+
+    # custom axes:
     scale_x_continuous( label = axisdf[[CHR]], breaks= axisdf$center ) +
-    scale_y_continuous(expand = c(0, 0)) + # expand=c(0,0)removes space between plot area and x axis 
+    scale_y_continuous(expand = c(0, 1)) + # expand=c(0,1)removes space between plot area and x axis 
     
     # add plot and axis titles
     ggtitle(paste0(title)) +
@@ -202,11 +218,8 @@ gg.manhattan <- function(df, threshold, hlight, col = brewer.pal(9, "Greys")[c(3
     geom_hline(yintercept = -log10(sugg), linetype="dashed") +
     
     # Add highlighted points
-    #geom_point(data=subset(df.tmp, is_highlight=="yes"), color="orange", size=2) +
-    
-    # Add label using ggrepel to avoid overlapping
-    geom_label_repel(data=df.tmp[df.tmp$is_annotate=="yes",], aes_string(label=as.factor(SNP), alpha=0.7), size=5, force=1.3) +
-    
+    geom_point(data=subset(df.tmp, is_highlight=="yes"), color="orange", size=2) +
+        
     # Custom the theme:
     theme_bw(base_size = 22) +
     theme( 
@@ -216,6 +229,9 @@ gg.manhattan <- function(df, threshold, hlight, col = brewer.pal(9, "Greys")[c(3
       panel.grid.major.x = element_blank(),
       panel.grid.minor.x = element_blank()
     )
+   if (lab) p <- p + geom_label_repel(data=df.tmp[df.tmp$is_annotate=="yes",],
+   									  aes_string(label=SNP, alpha=0.7), size=5, force=1.3)
+   return(p)
 }
 
 
