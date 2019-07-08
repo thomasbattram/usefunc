@@ -165,7 +165,7 @@ met_num <- nrow(dat)/group_num/col_num
 #' @param lab whether or not to add labels to the sites on the plot
 gg.manhattan <- function(df, threshold, hlight, col = brewer.pal(9, "Greys")[c(4,7)],
 						 title, SNP = "SNP", CHR = "CHR", BP = "BP", P = "P",
-						 sig = 1e-8, sugg = 1e-6, lab = TRUE, colour = TRUE){
+						 sig = 1e-8, sugg = 1e-6, lab = FALSE, colour = TRUE){
   # format df
   df.tmp <- df %>% 
     
@@ -182,7 +182,7 @@ gg.manhattan <- function(df, threshold, hlight, col = brewer.pal(9, "Greys")[c(4
     
     # Add a cumulative position of each SNP
     arrange_(CHR, BP) %>%
-    mutate( BPcum = !! BP + tot) %>%
+    mutate( BPcum = !! as.name(BP) + tot) %>%
     
     # Add highlight and annotation information
     mutate( is_highlight := ifelse(!! as.name(SNP) %in% hlight, "yes", "no")) %>%
