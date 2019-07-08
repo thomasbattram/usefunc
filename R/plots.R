@@ -25,11 +25,6 @@ facet_var_gen <- function (dat, col_num, group = NA) {
 	}
 }
 
-dat=fin_auc_dat
-col_num=1
-group="predictor"
-y_axis=dat$y_axis_var
-null_at=0.5
 forest_plot <- function(dat, col_num, group = NA, y_axis, units = NULL, title = NULL, scale = 1, null_at = 1, text_size = "norm", meta = FALSE, f_var = "facet_var") {
 # Format of data for plot (doesn't matter where in the data frame these things are and can have extra columns)
 # y_axis_var Estimate 2.5 % 97.5 % 
