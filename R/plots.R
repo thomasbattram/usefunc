@@ -25,7 +25,11 @@ facet_var_gen <- function (dat, col_num, group = NA) {
 	}
 }
 
-
+dat=fin_auc_dat
+col_num=1
+group="predictor"
+y_axis=dat$y_axis_var
+null_at=0.5
 forest_plot <- function(dat, col_num, group = NA, y_axis, units = NULL, title = NULL, scale = 1, null_at = 1, text_size = "norm", meta = FALSE, f_var = "facet_var") {
 # Format of data for plot (doesn't matter where in the data frame these things are and can have extra columns)
 # y_axis_var Estimate 2.5 % 97.5 % 
@@ -105,7 +109,7 @@ met_num <- nrow(dat)/group_num/col_num
 		test_forest_dat <- dplyr::filter(dat, facet_var == i)
 		test_shading_dat <- dplyr::filter(shading, facet_var == i)
 		
-		test_forest_dat[[y_axis_var]] <- factor(test_forest_dat[[y_axis_var]], levels = test_forest_dat[[y_axis_var]][1:(nrow(test_forest_dat) / group_num)])
+		test_forest_dat[[y_axis_var]] <- factor(test_forest_dat[[y_axis_var]], levels = unique(test_forest_dat[[y_axis_var]]))
 
 		labels <- test_forest_dat[[y_axis[1]]]
 		if (length(y_axis) > 1) {
@@ -166,7 +170,7 @@ met_num <- nrow(dat)/group_num/col_num
 #' @param lab whether or not to add labels to the sites on the plot
 gg.manhattan <- function(df, threshold, hlight, col = brewer.pal(9, "Greys")[c(4,7)],
 						 title, SNP = "SNP", CHR = "CHR", BP = "BP", P = "P",
-						 sig = 1e-8, sugg = 1e-6, lab = TRUE){
+						 sig = 1e-8, sugg = 1e-6, lab = TRUE, colour = TRUE){
   # format df
   df.tmp <- df %>% 
     
@@ -215,11 +219,18 @@ gg.manhattan <- function(df, threshold, hlight, col = brewer.pal(9, "Greys")[c(4
     
     # add genome-wide sig and sugg lines
     geom_hline(yintercept = -log10(sig)) +
-    geom_hline(yintercept = -log10(sugg), linetype="dashed") +
+    geom_hline(yintercept = -log10(sugg), linetype="dashed")# +
     
+    if (colour) {
+    	p <- p + 
+    		geom_point(data=subset(df.tmp, is_highlight=="yes"), color="orange", size=2)
+    } else {
+    	p <- p +
+    		geom_point(data=subset(df.tmp, is_highlight=="yes"), shape=2, size=2)
+    }
     # Add highlighted points
-    geom_point(data=subset(df.tmp, is_highlight=="yes"), color="orange", size=2) +
-        
+    # geom_point(data=subset(df.tmp, is_highlight=="yes"), color="orange", size=2) +
+    p <- p +    
     # Custom the theme:
     theme_bw(base_size = 22) +
     theme( 
