@@ -106,7 +106,7 @@ met_num <- nrow(dat)/group_num/col_num
 		
 		test_forest_dat[[y_axis_var]] <- factor(test_forest_dat[[y_axis_var]], levels = unique(test_forest_dat[[y_axis_var]]))
 
-		labels <- test_forest_dat[[y_axis[1]]]
+		labels <- levels(test_forest_dat[[y_axis[1]]])
 		if (length(y_axis) > 1) {
 			for (j in 2:length(y_axis)) {
 				labels <- paste(labels, test_forest_dat[[y_axis[j]]], sep = "\n")
@@ -170,8 +170,8 @@ gg.manhattan <- function(df, threshold, hlight, col = brewer.pal(9, "Greys")[c(4
   df.tmp <- df %>% 
     
     # Compute chromosome size
-    group_by_(CHR) %>% 
-    summarise_(chr_len = max(.[[BP]])) %>% 
+    group_by(!! as.name(CHR)) %>% 
+    summarise(chr_len = max(!! as.name(BP), na.rm = TRUE)) %>% 
     
     # Calculate cumulative position of each chromosome
     mutate(tot = cumsum(chr_len) - chr_len) %>%
@@ -182,7 +182,7 @@ gg.manhattan <- function(df, threshold, hlight, col = brewer.pal(9, "Greys")[c(4
     
     # Add a cumulative position of each SNP
     arrange_(CHR, BP) %>%
-    mutate( BPcum = !! as.name(BP) + tot) %>%
+    mutate( BPcum = !! BP + tot) %>%
     
     # Add highlight and annotation information
     mutate( is_highlight := ifelse(!! as.name(SNP) %in% hlight, "yes", "no")) %>%
