@@ -272,3 +272,49 @@ read_hsq <- function(filename, label=NULL)
 		c$type <- "details"
 		return(rbind.fill(list(variances, vp, ve=ve, hsq, c)))
 }
+
+#' Read in LDAK .reml file in long format
+#' 
+#' @param input .reml file or the filename excluding .reml
+#' 
+#' @export
+#' @return list of all results in .reml file
+read_ldak <- function(input) {
+	require(tidyverse)
+
+	if (!grepl(".reml", input)) input <- paste0(input, ".reml")
+
+	# read in the data in two parts
+	dat <- read_delim(input, delim = " ", n_max = 12, col_names = FALSE)
+	her_dat <- read_delim(input, delim = " ", skip = 13)
+
+	colnames(dat) <- c("variable", "value")
+	# extract the meta-data
+	meta_dat_vars <- c("Num_Kinships", 
+						"Num_Regions", 
+						"Num_Tops", 
+						"Num_Covars", 
+						"Total_Samples", 
+						"With_Phenotypes")
+	meta_dat <- dat %>%
+		dplyr::filter(variable %in% meta_dat_vars)
+
+	# extract the file names
+	file_dat <- dat %>%
+		dplyr::filter(variable %in% grep("file", variable, value = TRUE))
+
+	# extract the likelihood estimates
+	ll_vars <- c("Null_Likelihood", "Alt_Likelihood", "LRT_Stat")
+	l_dat <- dat %>%
+		dplyr::filter(variable %in% ll_vars) %>%
+		mutate(value = as.numeric(value))
+
+	# put it all in a list
+	out_dat <- list(her_estimates = her_dat,
+					likelihood_estimates = l_dat,
+					meta_data = meta_dat, 
+					other_file_names = file_dat)	
+	return(out_dat)
+}
+
+
