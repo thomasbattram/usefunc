@@ -285,7 +285,7 @@ read_ldak <- function(input) {
 	if (!grepl(".reml", input)) input <- paste0(input, ".reml")
 
 	# read in the data in two parts
-	dat <- read_delim(input, delim = " ", n_max = 12, col_names = FALSE)
+	dat <- read_delim(input, delim = " ", n_max = 13, col_names = FALSE)
 	her_dat <- read_delim(input, delim = " ", skip = 13)
 
 	colnames(dat) <- c("variable", "value")
