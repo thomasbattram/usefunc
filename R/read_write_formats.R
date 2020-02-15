@@ -304,7 +304,7 @@ read_ldak <- function(input) {
 		dplyr::filter(variable %in% grep("file", variable, value = TRUE))
 
 	# extract the likelihood estimates
-	ll_vars <- c("Null_Likelihood", "Alt_Likelihood", "LRT_Stat")
+	ll_vars <- c("Null_Likelihood", "Alt_Likelihood", "LRT_Stat", "LRT_P")
 	l_dat <- dat %>%
 		dplyr::filter(variable %in% ll_vars) %>%
 		mutate(value = as.numeric(value))
