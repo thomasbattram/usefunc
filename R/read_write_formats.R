@@ -317,4 +317,18 @@ read_ldak <- function(input) {
 	return(out_dat)
 }
 
+#' Read in files with rownames using read_delim() from the readr package
+#' 
+#' @param input file name
+#' @param ... any parameters for read_delim()
+#' 
+#' @export
+#' @return tibble of data that has rownames 
+read_delim_rownames <- function(input, delim, ...) {
+	require(readr)
 
+	temp <- read_delim(input, n_max = 0, delim = delim) 
+	cols <- c("row", colnames(temp))
+	dat <- read_delim(input, delim = delim, col_names = cols, skip = 1, ...)
+	return(dat)
+}
