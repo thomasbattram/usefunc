@@ -152,7 +152,6 @@ met_num <- nrow(dat)/group_num/col_num
 #' Generates a Manhattan plot using gwas data
 #' 
 #' @param df data.frame containing your results
-#' @param threshold the P value threshold
 #' @param hlight a vector containing any SNPs that need highlighting
 #' @param col colours for the plot
 #' @param title title of the plot
@@ -163,7 +162,7 @@ met_num <- nrow(dat)/group_num/col_num
 #' @param sig the "significance threshold"
 #' @param sugg the "suggestive significance threshold"
 #' @param lab whether or not to add labels to the sites on the plot
-gg.manhattan <- function(df, threshold, hlight, col = brewer.pal(9, "Greys")[c(4,7)],
+gg.manhattan <- function(df, hlight, col = brewer.pal(9, "Greys")[c(4,7)],
 						 title, SNP = "SNP", CHR = "CHR", BP = "BP", P = "P",
 						 sig = 1e-8, sugg = 1e-6, lab = FALSE, colour = TRUE){
   # format df
@@ -186,7 +185,7 @@ gg.manhattan <- function(df, threshold, hlight, col = brewer.pal(9, "Greys")[c(4
     
     # Add highlight and annotation information
     mutate( is_highlight := ifelse(!! as.name(SNP) %in% hlight, "yes", "no")) %>%
-    mutate( is_annotate := ifelse(!! as.name(P) < threshold, "yes", "no"))
+    mutate( is_annotate := ifelse(!! as.name(SNP) %in% hlight, "yes", "no"))
 
     # change CHR to a factor
     df.tmp[[CHR]] <- as.factor(df.tmp[[CHR]])
