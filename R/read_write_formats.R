@@ -332,3 +332,18 @@ read_delim_rownames <- function(input, delim, ...) {
 	dat <- read_delim(input, delim = delim, col_names = cols, skip = 1, ...)
 	return(dat)
 }
+
+#' Use the base R load function but name the object(s) being loaded in
+#' 
+#' @param file file name
+#' 
+#' @export
+#' @return data loaded in
+new_load <- function(file) {
+	temp_space <- new.env()
+	var <- load(file, temp_space)
+	out <- get(var, temp_space)
+	rm(temp_space)
+	return(out)
+}
+
