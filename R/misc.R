@@ -10,7 +10,7 @@ gg_imgcat <- function(plot, path = getwd(), save_plot = FALSE,
 				   	  filename = "temp.png") 
 {	
 	tempfile <- paste0(path, "/", filename)
-	ggsave(tempfile, plot = plot)
+	ggplot2::ggsave(tempfile, plot = plot)
 	system(paste("~/.iterm2/imgcat", tempfile))
 	system(paste("rm", tempfile))
 }

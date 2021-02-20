@@ -13,4 +13,6 @@ Suggests:
 Imports: 
     ggplot2,
     magrittr,
-    dplyr
+    dplyr,
+    plyr,
+    stats

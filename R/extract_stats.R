@@ -73,10 +73,8 @@ summarise_lm <- function(fit, outcome, exposure) {
   stopifnot(class(fit) == "lm")
   summ <- as.matrix(c(summary(fit)$coef[exposure, ], confint(fit)[exposure, ], summary(fit)$adj.r.squared))
   summ <- as.data.frame(t(summ))
-  sum_tab <- summ %>%
-    mutate(outcome = outcome) %>%
-    dplyr::select(-`t value`) %>%
-    dplyr::select(outcome, everything())
+  sum_tab <- dplyr::mutate(summ, outcome = outcome)
+  sum_tab <-  dplyr::select(sum_tab, outcome, everything(), -`t value`)
 
   colnames(sum_tab) <- c("outcome", "estimate", "se", "p", "CI_low", "CI_up", "adj_r2") 
   
@@ -93,16 +91,15 @@ summarise_lm <- function(fit, outcome, exposure) {
 #' @param fit regression output from glm() function
 #' @param outcome the outcome variable
 #' @param exposure the exposure variable 
+#' 
 #' @export 
 #' @return data.frame containing outcomes, estimate, se, p and CIs, residuals and the input
 summarise_glm <- function(fit, outcome, exposure) {
   stopifnot(class(fit)[1] == "glm")
   summ <- as.matrix(c(summary(fit)$coef[exposure, ], confint(fit)[exposure, ], summary(fit)$adj.r.squared))
   summ <- as.data.frame(t(summ))
-  sum_tab <- summ %>%
-    mutate(outcome = outcome) %>%
-    dplyr::select(-`z value`) %>%
-    dplyr::select(outcome, everything())
+  sum_tab <- dplyr::mutate(summ, outcome = outcome)
+  sum_tab <- dplyr::select(sum_tab, outcome, everything(), -`z value`)
 
   colnames(sum_tab) <- c("outcome", "estimate", "se", "p", "CI_low", "CI_up") 
   
@@ -120,6 +117,7 @@ summarise_glm <- function(fit, outcome, exposure) {
 #' @param r_msg print the error message given by the function
 #' @param user_msg a message given by the user
 #' @param to_return what should be returned if there is an error 
+#' 
 #' @export
 #' @return what is chosen by the user to be returned, default = NA 
 err_msg <- function(e, r_msg = TRUE, user_msg = NULL, to_return = NA) {

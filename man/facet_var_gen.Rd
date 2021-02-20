@@ -13,6 +13,9 @@ facet_var_gen(dat, col_num, group = NA)
 
 \item{group}{grouping variable}
 }
+\value{
+a vector used to facet plot made in forest_plot
+}
 \description{
 Generates a vector that can be added to a data.frame and split forest plots up
 }

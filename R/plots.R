@@ -5,6 +5,9 @@
 #' @param dat a data.frame that will be used for the forest plot
 #' @param col_num number of columns the plot will be
 #' @param group grouping variable 
+#' 
+#' @export
+#' @return a vector used to facet plot made in forest_plot
 facet_var_gen <- function (dat, col_num, group = NA) {
 	group_num <- length(unique(dat[[group]]))
 	if (group_num == 0) group_num <- 1
@@ -23,8 +26,15 @@ facet_var_gen <- function (dat, col_num, group = NA) {
 			facet_var <- rep(c(fv, rep(col_num, times = (nrow(dat) - length(fv) * group_num)/group_num)), times = group_num)
 		}
 	}
+	return(facet_var)
 }
 
+#' Generate a forest plot
+#' 
+#' Generate a forest plot using ggplot2. This function has capability to be split into multiple forests and was generated to display Mendelian randomization results with a binary outcome.
+#' 
+#' @param dat a data.frame containing the data
+#' @param col_num 
 forest_plot <- function(dat, col_num, group = NA, y_axis, units = NULL, title = NULL, scale = 1, null_at = 1, text_size = "norm", meta = FALSE, f_var = "facet_var") {
 # Format of data for plot (doesn't matter where in the data frame these things are and can have extra columns)
 # y_axis_var Estimate 2.5 % 97.5 % 
