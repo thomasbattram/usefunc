@@ -4,8 +4,13 @@
 #' @export
 #' @return mode of numeric vector
 getmode <- function(v) {
-   uniqv <- unique(v)
-   uniqv[which.max(tabulate(match(v, uniqv)))]
+    uniqv <- unique(v)
+    tabv <- tabulate(match(v, uniqv))
+    modev <- uniqv[which(tabv == max(tabv))]
+    if (length(modev) > 1) {
+        warning("There are multiple modes")
+    }
+    return(modev)
 }
 
 #' Extract summary statistics from numeric vector
