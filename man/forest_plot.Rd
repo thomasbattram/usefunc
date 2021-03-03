@@ -21,7 +21,26 @@ forest_plot(
 \arguments{
 \item{dat}{a data.frame containing the data}
 
-\item{col_num}{}
+\item{group}{group}
+
+\item{y_axis}{y-axis}
+
+\item{units}{units}
+
+\item{title}{title}
+
+\item{scale}{scale}
+
+\item{null_at}{null at}
+
+\item{text_size}{text size}
+
+\item{meta}{meta-analysis?}
+
+\item{f_var}{facet variable name}
+}
+\value{
+forest plot
 }
 \description{
 Generate a forest plot using ggplot2. This function has capability to be split into multiple forests and was generated to display Mendelian randomization results with a binary outcome.

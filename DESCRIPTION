@@ -15,4 +15,9 @@ Imports:
     magrittr,
     dplyr,
     plyr,
-    stats
+    stats,
+    gridExtra,
+    readr,
+    cowplot,
+    ggrepel,
+    reshape2

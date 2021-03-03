@@ -30,8 +30,8 @@ make_geno <- function(n, p)
 #'
 #' @param effs Array of beta values for each input. Leave the vx and vy values to default (=1) to allow effs to be equal to the correlation between y and each x
 #' @param indep Matrix of independent variables corresponding to effs
-#' @param vy=1 The output variance of y
-#' @param vx=rep(1, length(effs)) The desired scaled variance of x
+#' @param vy The output variance of y. default=1
+#' @param vx The desired scaled variance of x. default=rep(1, length(effs)) 
 #'
 #' @export
 #' @return Numeric array, simulated phenotype

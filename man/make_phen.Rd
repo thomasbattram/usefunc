@@ -11,9 +11,9 @@ make_phen(effs, indep, vy = 1, vx = rep(1, length(effs)))
 
 \item{indep}{Matrix of independent variables corresponding to effs}
 
-\item{vy=1}{The output variance of y}
+\item{vy}{The output variance of y. default=1}
 
-\item{vx=rep(1, }{length(effs)) The desired scaled variance of x}
+\item{vx}{The desired scaled variance of x. default=rep(1, length(effs))}
 }
 \value{
 Numeric array, simulated phenotype

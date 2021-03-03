@@ -19,6 +19,7 @@ getmode <- function(v) {
 #' @param min extract minimum value
 #' @param q1 extract first quartile
 #' @param med extract median
+#' @param mean extract mean
 #' @param q3 extract third quartile
 #' @param max extract maximum value
 #' @param na extract number of NA values

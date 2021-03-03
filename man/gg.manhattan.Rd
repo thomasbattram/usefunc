@@ -41,6 +41,11 @@ gg.manhattan(
 \item{sugg}{the "suggestive significance threshold"}
 
 \item{lab}{whether or not to add labels to the sites on the plot}
+
+\item{colour}{coloured plot?}
+}
+\value{
+manhattan plot
 }
 \description{
 Generates a Manhattan plot using gwas data

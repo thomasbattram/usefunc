@@ -7,7 +7,7 @@
 make_grm_matrix(grm)
 }
 \arguments{
-\item{grm}{Result from readGRM}
+\item{grm}{Result from read_grm}
 }
 \value{
 Matrix of n x n

@@ -2,21 +2,43 @@
 # Functions that help tidy data for publication
 # ------------------------------------------------------------------
 
-# Formats a set of numbers to have a certain number of sig figs
+#' Format a set of numbers to have a certain number of sig figs
+#'
+#' Format a set of numbers to have a certain number of sig figs
+#'
+#' @param num numeric vector
+#' @param digits number of digits
+#'
+#' @export
+#' @return character vector with all numbers formated
 make_pretty <- function (num, digits) {
-  as.numeric(formatC(signif(num, digits), digits = digits, format = "fg", flag = "#"))
+ 	as.numeric(formatC(signif(num, digits), digits = digits, format = "fg", flag = "#"))
 }
 
-# Makes a table from lm stats - need to use the linear regression function first or something similar
+#' Format a set of numbers to have a certain number of sig figs
+#'
+#' Format a set of numbers to have a certain number of sig figs
+#'
+#' @param dat data
+#' @param voi variable of interest
+#' @param est effect estimate variable 
+#' @param se SE variable
+#' @param upper_CI upper confidence interval variable name
+#' @param lower_CI lower confidence interval variable name
+#' @param p pvalue variable name
+#' @param arrange_by variable to arrange output by
+#' @param output either SE or CI or both in output
+#' @importFrom magrittr %>%
+#'
+#' @export
+#' @return character vector with all numbers formated
 make_pretty_lm_table <- function(dat, voi, est = "Estimate", se = "StdErr", upper_CI = "97.5 %", lower_CI = "2.5 %", p = "Pr(>|t|)", arrange_by = p, output = c("se", "CI")) {
-	require(tidyverse)
-
-	out <- arrange_(dat, arrange_by) %>%
-		mutate(SE = make_pretty(.[[se]], 3)) %>%
-		mutate(P = make_pretty(.[[p]], 3)) %>%
-		mutate(low_CI = make_pretty(.[[lower_CI]], 3)) %>%
-		mutate(up_CI = make_pretty(.[[upper_CI]], 3)) %>%
-		mutate(`Estimate (95% CI)` = paste0(make_pretty(.[[est]], 3), " (", low_CI, ", ", up_CI, ")"))
+	out <- dplyr::arrange_(dat, arrange_by) %>%
+		dplyr::mutate(SE = make_pretty(.[[se]], 3)) %>%
+		dplyr::mutate(P = make_pretty(.[[p]], 3)) %>%
+		dplyr::mutate(low_CI = make_pretty(.[[lower_CI]], 3)) %>%
+		dplyr::mutate(up_CI = make_pretty(.[[upper_CI]], 3)) %>%
+		dplyr::mutate(`Estimate (95% CI)` = paste0(make_pretty(.[[est]], 3), " (", low_CI, ", ", up_CI, ")"))
 
 	if ("se" %in% output && !("CI" %in% output)) {
 		out <- dplyr::select_(out, voi, est, "SE", "P")
@@ -32,5 +54,12 @@ make_pretty_lm_table <- function(dat, voi, est = "Estimate", se = "StdErr", uppe
 	return(out)
 }
 
-# Function for numbers in rmarkdown
+#' Format numbers
+#'
+#' Format numbers to being 2 digits
+#'
+#' @param x numeric vector
+#'
+#' @export
+#' @return character vector with all numbers formated
 comma <- function(x) format(x, digits = 2, big.mark = ",")

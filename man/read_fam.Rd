@@ -6,6 +6,9 @@
 \usage{
 read_fam(rootname)
 }
+\arguments{
+\item{rootname}{rootname}
+}
 \value{
 Data frame
 }

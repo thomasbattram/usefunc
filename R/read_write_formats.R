@@ -54,7 +54,7 @@ read_grm <- function(rootname, n.file = FALSE)
 
 #' Convert long GRM format to matrix format
 #'
-#' @param grm Result from readGRM
+#' @param grm Result from read_grm
 #' @export
 #' @return Matrix of n x n
 make_grm_matrix <- function(grm)
@@ -71,10 +71,10 @@ make_grm_matrix <- function(grm)
 
 
 
-#' Write readGRM style output back to binary GRM for use with GCTA
+#' Write read_grm style output back to binary GRM for use with GCTA
 #'
-#' @param grm Output from \link{readGRM}
-#' @param rootname
+#' @param grm Output from \link{read_grm}
+#' @param rootname rootname
 #' @param n.file Write out grm.N.bin file - not always needed
 #' @export
 write_grm <- function(grm, rootname, n.file = FALSE)
@@ -101,7 +101,7 @@ write_grm <- function(grm, rootname, n.file = FALSE)
 #'
 #' Either checks of all files for a rootname exist, or returns a specific suffix
 #'
-#' @param rootname
+#' @param rootname rootname
 #' @param software Either "plink" or "gcta"
 #' @param suffix Either "all" or a specific suffic
 #'
@@ -143,7 +143,7 @@ check_rootname <- function(rootname, software="plink", suffix="all")
 
 #' Read bim file
 #' 
-#' @param rootname
+#' @param rootname rootname
 #' @export
 #' @return Data frame
 read_bim <- function(rootname)
@@ -157,7 +157,7 @@ read_bim <- function(rootname)
 
 #' Read fam file
 #' 
-#' @param rootname
+#' @param rootname rootname
 #' @export
 #' @return Data frame
 read_fam <- function(rootname)
@@ -171,7 +171,7 @@ read_fam <- function(rootname)
 
 #' Read output from plink --linear
 #'
-#' @param filename
+#' @param filename filename
 #' @param h Is there a header
 #'
 #' @export
@@ -240,8 +240,6 @@ read_plink_raw <- function(filename)
 #' @return Data frame of REML results
 read_hsq <- function(filename, label=NULL)
 {
-		require(reshape2)
-		require(plyr)
 		if(!file.exists(filename))
 		{
 				filename <- paste(filename, ".hsq", sep="")
@@ -250,16 +248,16 @@ read_hsq <- function(filename, label=NULL)
 		a <- readLines(filename)
 		ncomp <- (length(a) - 5) / 2
 		b <- read.table(filename, header=T, nrows=ncomp*2+2, stringsAsFactors=FALSE)
-		variances <- melt(b[1:(ncomp),], measure.vars=c("Variance", "SE"))
+		variances <- reshape2::melt(b[1:(ncomp),], measure.vars=c("Variance", "SE"))
 		variances$label <- label
 		variances$type <- "vg"
-		vp <- melt(b[(ncomp+2),], measure.vars=c("Variance", "SE"))
+		vp <- reshape2::melt(b[(ncomp+2),], measure.vars=c("Variance", "SE"))
 		vp$label <- label
 		vp$type <- "vp"
-		ve <- melt(b[(ncomp+1),], measure.vars=c("Variance", "SE"))
+		ve <- reshape2::melt(b[(ncomp+1),], measure.vars=c("Variance", "SE"))
 		ve$label <- label
 		ve$type <- "ve"
-		hsq <- melt(b[(ncomp+3):nrow(b), ], measure.vars=c("Variance", "SE"))
+		hsq <- reshape2::melt(b[(ncomp+3):nrow(b), ], measure.vars=c("Variance", "SE"))
 		hsq$label <- label
 		hsq$type <- "hsq"
 		c <- read.table(filename, h=F, skip=ncomp*2+3, stringsAsFactors=FALSE)
@@ -270,7 +268,7 @@ read_hsq <- function(filename, label=NULL)
 		c$variable[1] <- "ncomp"
 		c$value[1] <- ncomp
 		c$type <- "details"
-		return(rbind.fill(list(variances, vp, ve=ve, hsq, c)))
+		return(plyr::rbind.fill(list(variances, vp, ve=ve, hsq, c)))
 }
 
 #' Read in LDAK .reml file in long format
@@ -280,13 +278,12 @@ read_hsq <- function(filename, label=NULL)
 #' @export
 #' @return list of all results in .reml file
 read_ldak <- function(input) {
-	require(tidyverse)
 
 	if (!grepl(".reml", input)) input <- paste0(input, ".reml")
 
 	# read in the data in two parts
-	dat <- read_delim(input, delim = " ", n_max = 13, col_names = FALSE)
-	her_dat <- read_delim(input, delim = " ", skip = 13)
+	dat <- readr::read_delim(input, delim = " ", n_max = 13, col_names = FALSE)
+	her_dat <- readr::read_delim(input, delim = " ", skip = 13)
 
 	colnames(dat) <- c("variable", "value")
 	# extract the meta-data
@@ -307,7 +304,7 @@ read_ldak <- function(input) {
 	ll_vars <- c("Null_Likelihood", "Alt_Likelihood", "LRT_Stat", "LRT_P")
 	l_dat <- dat %>%
 		dplyr::filter(variable %in% ll_vars) %>%
-		mutate(value = as.numeric(value))
+		dplyr::mutate(value = as.numeric(value))
 
 	# put it all in a list
 	out_dat <- list(her_estimates = her_dat,
@@ -320,16 +317,15 @@ read_ldak <- function(input) {
 #' Read in files with rownames using read_delim() from the readr package
 #' 
 #' @param input file name
+#' @param delim delimiter
 #' @param ... any parameters for read_delim()
 #' 
 #' @export
 #' @return tibble of data that has rownames 
 read_delim_rownames <- function(input, delim, ...) {
-	require(readr)
-
-	temp <- read_delim(input, n_max = 0, delim = delim) 
+	temp <- readr::read_delim(input, n_max = 0, delim = delim) 
 	cols <- c("row", colnames(temp))
-	dat <- read_delim(input, delim = delim, col_names = cols, skip = 1, ...)
+	dat <- readr::read_delim(input, delim = delim, col_names = cols, skip = 1, ...)
 	return(dat)
 }
 

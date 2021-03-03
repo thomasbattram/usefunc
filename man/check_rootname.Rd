@@ -7,6 +7,8 @@
 check_rootname(rootname, software = "plink", suffix = "all")
 }
 \arguments{
+\item{rootname}{rootname}
+
 \item{software}{Either "plink" or "gcta"}
 
 \item{suffix}{Either "all" or a specific suffic}

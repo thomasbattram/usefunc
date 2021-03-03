@@ -34,7 +34,19 @@ facet_var_gen <- function (dat, col_num, group = NA) {
 #' Generate a forest plot using ggplot2. This function has capability to be split into multiple forests and was generated to display Mendelian randomization results with a binary outcome.
 #' 
 #' @param dat a data.frame containing the data
-#' @param col_num 
+#' @param group group
+#' @param y_axis y-axis
+#' @param units units
+#' @param title title
+#' @param scale scale
+#' @param null_at null at
+#' @param text_size text size
+#' @param meta meta-analysis?
+#' @param f_var facet variable name
+#' @import ggplot2
+#' 
+#' @export
+#' @return forest plot
 forest_plot <- function(dat, col_num, group = NA, y_axis, units = NULL, title = NULL, scale = 1, null_at = 1, text_size = "norm", meta = FALSE, f_var = "facet_var") {
 # Format of data for plot (doesn't matter where in the data frame these things are and can have extra columns)
 # y_axis_var Estimate 2.5 % 97.5 % 
@@ -42,9 +54,9 @@ forest_plot <- function(dat, col_num, group = NA, y_axis, units = NULL, title = 
 # ----------  ----     --    --- 
 # ----------  ----     --    ---
 
-require("tidyverse")
-require("gridExtra")
-require("ggplot2")
+requireNamespace("magrittr")
+requireNamespace("ggplot2")
+
 
 if (text_size == "norm") {
 	text_size <- NULL
@@ -124,16 +136,16 @@ met_num <- nrow(dat)/group_num/col_num
 		}
 
 		plots[[i]] <- ggplot(test_forest_dat) +
-		geom_point(aes_string(x = y_axis_var, y = "Estimate", ymin = "`2.5 %`", ymax = "`97.5 %`", colour = group, group = group, shape = shape, size = shape), position=position_dodge(width = 0.9)) +
-		geom_rect(data = test_shading_dat, aes(xmin = min, xmax = max, ymin = -Inf, ymax = Inf, fill = factor(col)) ) +
-		scale_fill_manual(values = c("white", "gray80")) +
-		geom_pointrange(aes_string(x = y_axis_var, y = "Estimate", ymin = "`2.5 %`", ymax = "`97.5 %`", colour = group, group = group, shape = shape, size = shape), position=position_dodge(width = 0.9)) +
-		geom_hline(yintercept = null_at) +
-		theme(axis.title.y = element_blank(), axis.title.x = element_blank(), legend.position = "none", text = element_text(size = text_size)) +
-		scale_y_continuous(limit = c(min_val, max_val)) +
-		scale_x_discrete(labels = labels) +
-		scale_size_manual(values = c(0.75, 1.5)) +
-		coord_flip()
+			geom_point(aes_string(x = y_axis_var, y = "Estimate", ymin = "`2.5 %`", ymax = "`97.5 %`", colour = group, group = group, shape = shape, size = shape), position=position_dodge(width = 0.9)) +
+			geom_rect(data = test_shading_dat, aes(xmin = min, xmax = max, ymin = -Inf, ymax = Inf, fill = factor(col)) ) +
+			scale_fill_manual(values = c("white", "gray80")) +
+			geom_pointrange(aes_string(x = y_axis_var, y = "Estimate", ymin = "`2.5 %`", ymax = "`97.5 %`", colour = group, group = group, shape = shape, size = shape), position=position_dodge(width = 0.9)) +
+			geom_hline(yintercept = null_at) +
+			theme(axis.title.y = element_blank(), axis.title.x = element_blank(), legend.position = "none", text = element_text(size = text_size)) +
+			scale_y_continuous(limit = c(min_val, max_val)) +
+			scale_x_discrete(labels = labels) +
+			scale_size_manual(values = c(0.75, 1.5)) +
+			coord_flip()
 	}
 
 	#Produce the legend for the plot
@@ -148,11 +160,11 @@ met_num <- nrow(dat)/group_num/col_num
 		if (!is.factor(dat[[group]])) {
 			stop("The group needs to be a factor")
 		}
-		legend <- legend + scale_colour_hue(breaks = rev(levels(dat[[group]]))) 
+		legend <- legend + ggplot2::scale_colour_hue(breaks = rev(levels(dat[[group]]))) 
 	}
 	legend <- cowplot::get_legend(legend)
 
-	p <- marrangeGrob(plots, right = legend, bottom = units, top = title, ncol = col_num, nrow = 1)
+	p <- gridExtra::marrangeGrob(plots, right = legend, bottom = units, top = title, ncol = col_num, nrow = 1)
 	return(p)
 }
 
@@ -172,6 +184,10 @@ met_num <- nrow(dat)/group_num/col_num
 #' @param sig the "significance threshold"
 #' @param sugg the "suggestive significance threshold"
 #' @param lab whether or not to add labels to the sites on the plot
+#' @param colour coloured plot?
+#' 
+#' @export
+#' @return manhattan plot
 gg.manhattan <- function(df, hlight, col = brewer.pal(9, "Greys")[c(4,7)],
 						 title, SNP = "SNP", CHR = "CHR", BP = "BP", P = "P",
 						 sig = 1e-8, sugg = 1e-6, lab = FALSE, colour = TRUE){
@@ -179,23 +195,23 @@ gg.manhattan <- function(df, hlight, col = brewer.pal(9, "Greys")[c(4,7)],
   df.tmp <- df %>% 
     
     # Compute chromosome size
-    group_by(!! as.name(CHR)) %>% 
-    summarise(chr_len = max(!! as.name(BP), na.rm = TRUE)) %>% 
+    dplyr::group_by(!! as.name(CHR)) %>% 
+    dplyr::summarise(chr_len = max(!! as.name(BP), na.rm = TRUE)) %>% 
     
     # Calculate cumulative position of each chromosome
-    mutate(tot = cumsum(chr_len) - chr_len) %>%
+    dplyr::mutate(tot = cumsum(chr_len) - chr_len) %>%
     dplyr::select(-chr_len) %>%
     
     # Add this info to the initial dataset
-    left_join(df, ., by=setNames(CHR, CHR)) %>%
+    dplyr::left_join(df, ., by=setNames(CHR, CHR)) %>%
     
     # Add a cumulative position of each SNP
-    arrange_(CHR, BP) %>%
-    mutate( BPcum = !! as.name(BP) + tot) %>%
+    dplyr::arrange_(CHR, BP) %>%
+    dplyr::mutate( BPcum = !! as.name(BP) + tot) %>%
     
     # Add highlight and annotation information
-    mutate( is_highlight := ifelse(!! as.name(SNP) %in% hlight, "yes", "no")) %>%
-    mutate( is_annotate := ifelse(!! as.name(SNP) %in% hlight, "yes", "no"))
+    dplyr::mutate( is_highlight := ifelse(!! as.name(SNP) %in% hlight, "yes", "no")) %>%
+    dplyr::mutate( is_annotate := ifelse(!! as.name(SNP) %in% hlight, "yes", "no"))
 
     # change CHR to a factor
     df.tmp[[CHR]] <- as.factor(df.tmp[[CHR]])
@@ -206,46 +222,46 @@ gg.manhattan <- function(df, hlight, col = brewer.pal(9, "Greys")[c(4,7)],
   col_n <- length(col)
 
   # get chromosome center positions for x-axis
-  axisdf <- df.tmp %>% group_by_(CHR) %>% summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
+  axisdf <- df.tmp %>% dplyr::group_by_(CHR) %>% dplyr::summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
 
-  p <- ggplot(df.tmp, aes(x = BPcum, y = -log10(get(P)))) +
+  p <- ggplot2::ggplot(df.tmp, aes(x = BPcum, y = -log10(get(P)))) +
     # Show all points
-    geom_point(aes_string(color = CHR), alpha=0.8, size=2) +
-    scale_color_manual(values = rep(col, chr_n/col_n)) +
+    ggplot2::geom_point(aes_string(color = CHR), alpha=0.8, size=2) +
+    ggplot2::scale_color_manual(values = rep(col, chr_n/col_n)) +
 
     # custom axes:
-    scale_x_continuous( label = axisdf[[CHR]], breaks= axisdf$center ) +
-    scale_y_continuous(expand = c(0, 1)) + # expand=c(0,1)removes space between plot area and x axis 
+    ggplot2::scale_x_continuous( label = axisdf[[CHR]], breaks= axisdf$center ) +
+    ggplot2::scale_y_continuous(expand = c(0, 1)) + # expand=c(0,1)removes space between plot area and x axis 
     
     # add plot and axis titles
-    ggtitle(paste0(title)) +
-    labs(x = "Chromosome", y = "-log10(P)") +
+    ggplot2::ggtitle(paste0(title)) +
+    ggplot2::labs(x = "Chromosome", y = "-log10(P)") +
     
     # add genome-wide sig and sugg lines
-    geom_hline(yintercept = -log10(sig)) +
-    geom_hline(yintercept = -log10(sugg), linetype="dashed")# +
+    ggplot2::geom_hline(yintercept = -log10(sig)) +
+    ggplot2::geom_hline(yintercept = -log10(sugg), linetype="dashed")# +
     
     if (colour) {
     	p <- p + 
-    		geom_point(data=subset(df.tmp, is_highlight=="yes"), color="orange", size=2)
+    		ggplot2::geom_point(data=subset(df.tmp, is_highlight=="yes"), color="orange", size=2)
     } else {
     	p <- p +
-    		geom_point(data=subset(df.tmp, is_highlight=="yes"), shape=2, size=2)
+    		ggplot2::geom_point(data=subset(df.tmp, is_highlight=="yes"), shape=2, size=2)
     }
     # Add highlighted points
     # geom_point(data=subset(df.tmp, is_highlight=="yes"), color="orange", size=2) +
     p <- p +    
     # Custom the theme:
-    theme_bw(base_size = 22) +
-    theme( 
+    ggplot2::theme_bw(base_size = 22) +
+    ggplot2::theme( 
       plot.title = element_text(hjust = 0.5),
       legend.position="none",
       panel.border = element_blank(),
       panel.grid.major.x = element_blank(),
       panel.grid.minor.x = element_blank()
     )
-   if (lab) p <- p + geom_label_repel(data=df.tmp[df.tmp$is_annotate=="yes",],
-   									  aes_string(label=SNP, alpha=0.7), size=5, force=1.3)
+   if (lab) p <- p + ggrepel::geom_label_repel(data=df.tmp[df.tmp$is_annotate=="yes",],
+   									  ggplot2::aes_string(label=SNP, alpha=0.7), size=5, force=1.3)
    return(p)
 }
 

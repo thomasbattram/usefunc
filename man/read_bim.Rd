@@ -6,6 +6,9 @@
 \usage{
 read_bim(rootname)
 }
+\arguments{
+\item{rootname}{rootname}
+}
 \value{
 Data frame
 }

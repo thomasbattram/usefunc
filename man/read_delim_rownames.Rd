@@ -9,6 +9,8 @@ read_delim_rownames(input, delim, ...)
 \arguments{
 \item{input}{file name}
 
+\item{delim}{delimiter}
+
 \item{...}{any parameters for read_delim()}
 }
 \value{

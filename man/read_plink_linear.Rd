@@ -7,6 +7,8 @@
 read_plink_linear(filename, h = TRUE)
 }
 \arguments{
+\item{filename}{filename}
+
 \item{h}{Is there a header}
 }
 \value{

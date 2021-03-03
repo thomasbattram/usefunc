@@ -63,7 +63,7 @@ adjust_mean_variance <- function(y, x, keep.scale=TRUE)
 	d <- plyr::ddply(d, .(x), mutate, y1 = scale(y))
 	if(keep.scale)
 	{
-		s <- sd(y, na.rm=TRUE)
+		s <- stats::sd(y, na.rm=TRUE)
 		m <- mean(y, na.rm=TRUE)
 		d$y1 <- scale(d$y1) * s + m
 	} else {

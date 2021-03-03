@@ -24,6 +24,8 @@ extract_sum_stats(
 
 \item{med}{extract median}
 
+\item{mean}{extract mean}
+
 \item{q3}{extract third quartile}
 
 \item{max}{extract maximum value}

@@ -2,15 +2,17 @@
 % Please edit documentation in R/read_write_formats.R
 \name{write_grm}
 \alias{write_grm}
-\title{Write readGRM style output back to binary GRM for use with GCTA}
+\title{Write read_grm style output back to binary GRM for use with GCTA}
 \usage{
 write_grm(grm, rootname, n.file = FALSE)
 }
 \arguments{
-\item{grm}{Output from \link{readGRM}}
+\item{grm}{Output from \link{read_grm}}
+
+\item{rootname}{rootname}
 
 \item{n.file}{Write out grm.N.bin file - not always needed}
 }
 \description{
-Write readGRM style output back to binary GRM for use with GCTA
+Write read_grm style output back to binary GRM for use with GCTA
 }
