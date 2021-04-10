@@ -1,3 +1,14 @@
+#' Get colours for plotting that are better for colour blind people
+#' 
+#' Generates a vector of colour IDs that can be used for plots
+#' 
+#' @export
+#' @return a vector of colour IDs
+get_cb_palette <- function()
+{
+	c("#E69F00", "#56B4E9", "#999999", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+}
+
 #' Make facets for forest plots
 #' 
 #' Generates a vector that can be added to a data.frame and split forest plots up
