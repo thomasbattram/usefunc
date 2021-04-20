@@ -231,7 +231,7 @@ gg.manhattan <- function(df, hlight, col = brewer.pal(9, "Greys")[c(4,7)],
     
     # Compute chromosome size
     dplyr::group_by(!! as.name(CHR)) %>% 
-    dplyr::summarise(chr_len = max(!! as.name(BP), na.rm = TRUE)) %>% 
+    dplyr::summarise(chr_len = as.numeric(max(!! as.name(BP), na.rm = TRUE))) %>% 
     
     # Calculate cumulative position of each chromosome
     dplyr::mutate(tot = cumsum(chr_len) - chr_len) %>%
@@ -261,8 +261,11 @@ gg.manhattan <- function(df, hlight, col = brewer.pal(9, "Greys")[c(4,7)],
 
   # thin the scatter plot
   selection.idx <- scatter.thinning(x = df.tmp$BPcum, y = -log10(df.tmp[[P]]), resolution=100, max.per.cell=100)
+  df.select <- df.tmp[selection.idx, ]
+  
+  df.select$stat <- -log10(df.tmp[[P]])
 
-  p <- ggplot2::ggplot(df.tmp, aes(x = BPcum, y = -log10(get(P)))) +
+  p <- ggplot2::ggplot(df.select[selection.idx, ], aes(x = BPcum, y = stat)) +
     # Show all points
     ggplot2::geom_point(aes_string(color = CHR), alpha=0.8, size=2) +
     ggplot2::scale_color_manual(values = rep(col, chr_n/col_n)) +
@@ -281,10 +284,10 @@ gg.manhattan <- function(df, hlight, col = brewer.pal(9, "Greys")[c(4,7)],
     
     if (colour) {
     	p <- p + 
-    		ggplot2::geom_point(data=subset(df.tmp, is_highlight=="yes"), color="orange", size=2)
+    		ggplot2::geom_point(data=subset(df.select, is_highlight=="yes"), color="orange", size=2)
     } else {
     	p <- p +
-    		ggplot2::geom_point(data=subset(df.tmp, is_highlight=="yes"), shape=2, size=2)
+    		ggplot2::geom_point(data=subset(df.select, is_highlight=="yes"), shape=2, size=2)
     }
     # Add highlighted points
     # geom_point(data=subset(df.tmp, is_highlight=="yes"), color="orange", size=2) +
@@ -298,7 +301,7 @@ gg.manhattan <- function(df, hlight, col = brewer.pal(9, "Greys")[c(4,7)],
       panel.grid.major.x = element_blank(),
       panel.grid.minor.x = element_blank()
     )
-   if (lab) p <- p + ggrepel::geom_label_repel(data=df.tmp[df.tmp$is_annotate=="yes",],
+   if (lab) p <- p + ggrepel::geom_label_repel(data=df.select[df.select$is_annotate=="yes",],
    									  ggplot2::aes_string(label=SNP, alpha=0.7), size=5, force=1.3)
    return(p)
 }
