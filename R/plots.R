@@ -179,6 +179,30 @@ met_num <- nrow(dat)/group_num/col_num
 	return(p)
 }
 
+#' Remove points from a scatter plot where density is really high
+#' 
+#' @param x x-coordinates vector
+#' @param y y-coordinates vector
+#' @param resolution number of partitions for the x and y-dimensions.
+#' @param max.per.cell maximum number of points per x-y partition.
+#' @return index into the points that omits points from x-y partitions
+#' so that each has at most \code{max.per.cell} points.
+scatter.thinning <- function(x,y,resolution=100,max.per.cell=100) {
+    x.cell <- floor((resolution-1)*(x - min(x,na.rm=T))/diff(range(x,na.rm=T))) + 1
+    y.cell <- floor((resolution-1)*(y - min(y,na.rm=T))/diff(range(y,na.rm=T))) + 1
+    z.cell <- x.cell * resolution + y.cell
+    frequency.table <- table(z.cell)
+    frequency <- rep(0,max(z.cell, na.rm=T))
+    frequency[as.integer(names(frequency.table))] <- frequency.table
+    f.cell <- frequency[z.cell]
+    
+    big.cells <- length(which(frequency > max.per.cell))
+    sort(c(which(f.cell <= max.per.cell),
+           sample(which(f.cell > max.per.cell),
+                  size=big.cells * max.per.cell, replace=F)),
+         decreasing=F)
+}
+
 
 #' Manhattan plot function for gwas (stolen from pcgoddard)
 #' 
@@ -234,6 +258,9 @@ gg.manhattan <- function(df, hlight, col = brewer.pal(9, "Greys")[c(4,7)],
 
   # get chromosome center positions for x-axis
   axisdf <- df.tmp %>% dplyr::group_by_(CHR) %>% dplyr::summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
+
+  # thin the scatter plot
+  selection.idx <- scatter.thinning(x = df.tmp$BPcum, y = -log10(df.tmp[[P]]), resolution=100, max.per.cell=100)
 
   p <- ggplot2::ggplot(df.tmp, aes(x = BPcum, y = -log10(get(P)))) +
     # Show all points
