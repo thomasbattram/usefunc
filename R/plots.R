@@ -241,7 +241,7 @@ gg.manhattan <- function(df, hlight, col = brewer.pal(9, "Greys")[c(4,7)],
     dplyr::left_join(df, ., by=setNames(CHR, CHR)) %>%
     
     # Add a cumulative position of each SNP
-    dplyr::arrange_(CHR, BP) %>%
+    dplyr::arrange({{ CHR }}, {{ BP }}) %>%
     dplyr::mutate( BPcum = !! as.name(BP) + tot) %>%
     
     # Add highlight and annotation information
@@ -251,24 +251,22 @@ gg.manhattan <- function(df, hlight, col = brewer.pal(9, "Greys")[c(4,7)],
     # change CHR to a factor
     df.tmp[[CHR]] <- as.factor(df.tmp[[CHR]])
 
-  
-  # for the colour later on
-  chr_n <- length(unique(df.tmp[[CHR]]))
-  col_n <- length(col)
-
-  # get chromosome center positions for x-axis
-  axisdf <- df.tmp %>% dplyr::group_by_(CHR) %>% dplyr::summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
-
   # thin the scatter plot
   selection.idx <- scatter.thinning(x = df.tmp$BPcum, y = -log10(df.tmp[[P]]), resolution=100, max.per.cell=100)
   df.select <- df.tmp[selection.idx, ]
   
-  df.select$stat <- -log10(df.tmp[[P]])
+  df.select$stat <- -log10(df.select[[P]])
 
-  p <- ggplot2::ggplot(df.select[selection.idx, ], aes(x = BPcum, y = stat)) +
+  # for the colour later on
+  chr_n <- length(unique(df.select[[CHR]]))
+
+  # get chromosome center positions for x-axis
+  axisdf <- df.select %>% dplyr::group_by_at(CHR) %>% dplyr::summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
+
+  p <- ggplot2::ggplot(df.select, aes(x = BPcum, y = stat)) +
     # Show all points
     ggplot2::geom_point(aes_string(color = CHR), alpha=0.8, size=2) +
-    ggplot2::scale_color_manual(values = rep(col, chr_n/col_n)) +
+    ggplot2::scale_color_manual(values = rep_len(col, length.out = chr_n)) +
 
     # custom axes:
     ggplot2::scale_x_continuous( label = axisdf[[CHR]], breaks= axisdf$center ) +
