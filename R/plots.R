@@ -299,7 +299,7 @@ gg.manhattan <- function(df, hlight, col = brewer.pal(9, "Greys")[c(4,7)],
       panel.grid.major.x = element_blank(),
       panel.grid.minor.x = element_blank()
     )
-   if (lab) p <- p + ggrepel::geom_label_repel(data=df.select[df.select$is_annotate=="yes",],
+   if (lab && length(hlight) > 0) p <- p + ggrepel::geom_label_repel(data=df.select[df.select$is_annotate=="yes",],
    									  ggplot2::aes_string(label=SNP, alpha=0.7), size=5, force=1.3)
    return(p)
 }
