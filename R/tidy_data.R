@@ -12,6 +12,7 @@
 #' @export
 #' @return character vector with all numbers formated
 make_pretty <- function (num, digits) {
+	.Deprecated("comma")
  	as.numeric(formatC(signif(num, digits), digits = digits, format = "fg", flag = "#"))
 }
 
