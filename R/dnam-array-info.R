@@ -11,7 +11,7 @@
 #' @return Either a character vector of CpG sites to exclude from an array or a tibble with reasons to exlcude certain sites.
 get_zhou_recs <- function(outpath, listonly = TRUE, array = c("hm450", "epic"), overwrite = FALSE) {
     ## Check output path
-    if (base::file.exists(file.path) && !overwrite) {
+    if (base::file.exists(outpath) && !overwrite) {
         base::message(outpath, " is already present. Reading in from that file.")
         if (listonly) return(base::readLines(outpath))
         if (!listonly) return(readr::read_tsv(outpath))
