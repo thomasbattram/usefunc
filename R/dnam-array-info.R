@@ -35,9 +35,14 @@ get_zhou_recs <- function(outpath, listonly = TRUE, array = c("hm450", "epic"), 
         ## return the results
         res <- readr::read_tsv(outpath)
         if (listonly) {
-            return(res[res$MASK_general, "probeID", drop = TRUE])
+            ret <- res[res$MASK_general, "probeID", drop = TRUE]
+            message("Writing list of CpGs to file at: ", outpath)
+            writeLines(ret, con = outpath)
         } else {
-            return(res)
+            ret <- res
+            message("Writing CpGs and exclusion recommendations to tsv file at: ", outpath)
+            write.table(ret, file = outpath, col.names = TRUE, row.names = FALSE, quote = FALSE, sep = "\t")
         }
+        return(ret)
     }
 }
