@@ -1,18 +1,3 @@
-#' Generate a boxplot within a violin plot
-#' 
-#' @param p a plot with the class "ggplot"
-#' @param width width of the boxplot within the violin plot. Default = 0.2
-#' @param ... other parameters that can be parsed to geom_violin and geom_boxplot
-#' 
-#' @export
-#' @return boxplot within a violin plot
-geom_vio_box <- function(p, width = 0.2, ...)
-{
-	p + 
-		ggplot2::geom_violin(...) +
-		ggplot2::geom_boxplot(position=position_dodge(0.9), width = width, ...)
-}
-
 #' Get colours for plotting that are better for colour blind people
 #' 
 #' Generates a vector of colour IDs that can be used for plots
