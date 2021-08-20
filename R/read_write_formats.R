@@ -338,7 +338,8 @@ read_delim_rownames <- function(input, delim, ...) {
 new_load <- function(file) {
 	temp_space <- new.env()
 	var <- load(file, temp_space)
-	out <- get(var, temp_space)
+	out <- mget(var, temp_space)
+	if (length(out) == 1) out <- out[[1]]
 	rm(temp_space)
 	return(out)
 }
