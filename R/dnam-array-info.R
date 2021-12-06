@@ -18,10 +18,10 @@ get_zhou_recs <- function(outpath, listonly = TRUE, array = c("hm450", "epic"), 
     } else {
         ## Set download path
         if (array %in% "hm450") {
-            download_path <- "http://zhouserver.research.chop.edu/InfiniumAnnotation/20180909/HM450/HM450.hg38.manifest.tsv.gz"
+            download_path <- "https://zhouserver.research.chop.edu/InfiniumAnnotation/20180909/HM450/HM450.hg38.manifest.tsv.gz"
             base::message("Downloading from ", download_path)
         } else if (array == "epic") {
-            download_path <- "http://zhouserver.research.chop.edu/InfiniumAnnotation/20180909/EPIC/EPIC.hg38.manifest.tsv.gz"
+            download_path <- "https://zhouserver.research.chop.edu/InfiniumAnnotation/20180909/EPIC/EPIC.hg38.manifest.tsv.gz"
             base::message("Downloading from ", download_path)
         } else {
             stop("array must be either 'hm450' or 'epic'")
