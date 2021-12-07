@@ -289,7 +289,6 @@ read_ldak <- function(input, version = 5.1) {
 	dat <- readr::read_delim(input, delim = " ", n_max = skip_lines, col_names = FALSE)
 	her_dat <- readr::read_delim(input, delim = " ", skip = skip_lines)
 
-	if (version == 5.1) colnames(her_dat)[grep("SD", colnames(her_dat))] <- c("sd, mi_sd")
 	colnames(dat) <- c("variable", "value")
 	# extract the meta-data
 	meta_dat_vars <- c("Num_Kinships", 
