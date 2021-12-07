@@ -274,17 +274,22 @@ read_hsq <- function(filename, label=NULL)
 #' Read in LDAK .reml file in long format
 #' 
 #' @param input .reml file or the filename excluding .reml
+#' @param version version of ldak used to run REML analyses. Default = 5.1. 5 is acceptable.
 #' 
 #' @export
 #' @return list of all results in .reml file
-read_ldak <- function(input) {
+read_ldak <- function(input, version = 5.1) {
 
 	if (!grepl(".reml", input)) input <- paste0(input, ".reml")
+	if (!version %in% c(5, 5.1)) stop("This function only works with version 5.1 or 5 of LDAK")
 
 	# read in the data in two parts
-	dat <- readr::read_delim(input, delim = " ", n_max = 13, col_names = FALSE)
-	her_dat <- readr::read_delim(input, delim = " ", skip = 13)
+	if (version == 5) skip_lines <- 13
+	if (version == 5.1) skip_lines <- 16
+	dat <- readr::read_delim(input, delim = " ", n_max = skip_lines, col_names = FALSE)
+	her_dat <- readr::read_delim(input, delim = " ", skip = skip_lines)
 
+	if (version == 5.1) colnames(her_dat)[grep("SD", colnames(her_dat))] <- c("sd, mi_sd")
 	colnames(dat) <- c("variable", "value")
 	# extract the meta-data
 	meta_dat_vars <- c("Num_Kinships", 
