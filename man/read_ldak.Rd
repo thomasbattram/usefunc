@@ -4,10 +4,12 @@
 \alias{read_ldak}
 \title{Read in LDAK .reml file in long format}
 \usage{
-read_ldak(input)
+read_ldak(input, version = 5.1)
 }
 \arguments{
 \item{input}{.reml file or the filename excluding .reml}
+
+\item{version}{version of ldak used to run REML analyses. Default = 5.1. 5 is acceptable.}
 }
 \value{
 list of all results in .reml file

@@ -20,4 +20,7 @@ Imports:
     readr,
     cowplot,
     ggrepel,
-    reshape2
+    reshape2,
+    haven,
+    labelled,
+    stringr
