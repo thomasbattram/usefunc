@@ -127,3 +127,21 @@ err_msg <- function(e, r_msg = TRUE, user_msg = NULL, to_return = NA) {
   return(to_return)
 }
 
+
+#' Pool mean and SD estimates from two groups or cohorts
+#' 
+#' @param n1 sample size of group 1
+#' @param n2 sample size of group 2
+#' @param m1 mean of group 1
+#' @param m2 mean of group 2
+#' @param s1 SD of group 1
+#' @param s2 SD of group 2
+#' 
+#' @export
+#' @return list with pooled mean and SD estimates
+pool_mean_sd <- function(n1, n2, m1, m2, s1, s2)
+{
+  sd_out <- sqrt(((n1-1)*s1*s1 + (n2-1)*s2*s2 + n1 * n2 / (n1 + n2) * (m1*m1 + m2*m2 - 2 * m1 * m2)) / (n1 + n2 -1))
+  mean_out <- ((mean(m1) * n1) + (mean(m2) * n2)) / (n1 + n2)
+  return(list(sd = sd_out, mean = mean_out))
+}
