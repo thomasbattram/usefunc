@@ -7,7 +7,7 @@
 gg.manhattan(
   df,
   hlight,
-  col = brewer.pal(9, "Greys")[c(4, 7)],
+  col = RColorBrewer::brewer.pal(9, "Greys")[c(4, 7)],
   title,
   SNP = "SNP",
   CHR = "CHR",

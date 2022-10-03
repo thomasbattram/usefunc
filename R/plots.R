@@ -223,7 +223,7 @@ scatter.thinning <- function(x,y,resolution=100,max.per.cell=100) {
 #' 
 #' @export
 #' @return manhattan plot
-gg.manhattan <- function(df, hlight, col = brewer.pal(9, "Greys")[c(4,7)],
+gg.manhattan <- function(df, hlight, col = RColorBrewer::brewer.pal(9, "Greys")[c(4,7)],
 						 title, SNP = "SNP", CHR = "CHR", BP = "BP", P = "P",
 						 sig = 1e-8, sugg = 1e-6, lab = FALSE, colour = TRUE){
   # format df
