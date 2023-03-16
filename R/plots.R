@@ -210,7 +210,7 @@ scatter.thinning <- function(x,y,resolution=100,max.per.cell=100) {
 #' 
 #' @param df data.frame containing your results
 #' @param hlight a vector containing any SNPs that need highlighting
-#' @param col colours for the plot
+#' @param col colours for the plot (default = RColorBrewer::brewer.pal(9, "Greys")[c(4,7)])
 #' @param title title of the plot
 #' @param SNP name of the column corresponding to SNPs
 #' @param CHR name of the column corresponding to chromosome number
@@ -223,9 +223,9 @@ scatter.thinning <- function(x,y,resolution=100,max.per.cell=100) {
 #' 
 #' @export
 #' @return manhattan plot
-gg.manhattan <- function(df, hlight, col = RColorBrewer::brewer.pal(9, "Greys")[c(4,7)],
-						 title, SNP = "SNP", CHR = "CHR", BP = "BP", P = "P",
-						 sig = 1e-8, sugg = 1e-6, lab = FALSE, colour = TRUE){
+gg.manhattan <- function(df, hlight, col = "default",
+						 title = "Manhattan", SNP = "SNP", CHR = "CHR", BP = "BP", P = "P",
+						 sig = 5e-8, sugg = 1e-5, lab = FALSE, colour = TRUE){
   # format df
   df.tmp <- df %>% 
     
@@ -257,6 +257,9 @@ gg.manhattan <- function(df, hlight, col = RColorBrewer::brewer.pal(9, "Greys")[
   
   df.select$stat <- -log10(df.select[[P]])
 
+  # sort the colour out
+  cols <- ifelse(cols == "default", RColorBrewer::brewer.pal(9, "Greys")[c(4,7)], cols)
+  
   # for the colour later on
   chr_n <- length(unique(df.select[[CHR]]))
 

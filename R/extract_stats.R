@@ -100,7 +100,7 @@ summarise_glm <- function(fit, outcome, exposure) {
   summ <- as.matrix(c(summary(fit)$coef[exposure, ], confint(fit)[exposure, ], summary(fit)$adj.r.squared))
   summ <- as.data.frame(t(summ))
   sum_tab <- dplyr::mutate(summ, outcome = outcome)
-  sum_tab <- dplyr::select(sum_tab, outcome, everything(), -`z value`)
+  sum_tab <- dplyr::select(sum_tab, outcome, everything(), -`t value`)
 
   colnames(sum_tab) <- c("outcome", "estimate", "se", "p", "CI_low", "CI_up") 
   

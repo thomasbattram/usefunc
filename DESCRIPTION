@@ -23,4 +23,5 @@ Imports:
     reshape2,
     haven,
     labelled,
-    stringr
+    stringr,
+    RColorBrewer

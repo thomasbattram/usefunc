@@ -7,14 +7,14 @@
 gg.manhattan(
   df,
   hlight,
-  col = RColorBrewer::brewer.pal(9, "Greys")[c(4, 7)],
-  title,
+  col = "default",
+  title = "Manhattan",
   SNP = "SNP",
   CHR = "CHR",
   BP = "BP",
   P = "P",
-  sig = 1e-08,
-  sugg = 1e-06,
+  sig = 5e-08,
+  sugg = 1e-05,
   lab = FALSE,
   colour = TRUE
 )
@@ -24,7 +24,7 @@ gg.manhattan(
 
 \item{hlight}{a vector containing any SNPs that need highlighting}
 
-\item{col}{colours for the plot}
+\item{col}{colours for the plot (default = RColorBrewer::brewer.pal(9, "Greys")[c(4,7)])}
 
 \item{title}{title of the plot}
 
