@@ -7,7 +7,7 @@ usefunc
 <!-- badges: start -->
 <!-- badges: end -->
 
-A personal repository of useful functions
+A personal repository of useful functions. Some things stolen from: https://github.com/explodecomputer/explodecomputr
 
 Installation
 ------------
