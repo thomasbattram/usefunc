@@ -258,7 +258,7 @@ gg.manhattan <- function(df, hlight, col = "default",
   df.select$stat <- -log10(df.select[[P]])
 
   # sort the colour out
-  cols <- ifelse(cols == "default", RColorBrewer::brewer.pal(9, "Greys")[c(4,7)], cols)
+  col <- ifelse(col == "default", RColorBrewer::brewer.pal(9, "Greys")[c(4,7)], col)
   
   # for the colour later on
   chr_n <- length(unique(df.select[[CHR]]))
