@@ -64,3 +64,21 @@ make_pretty_lm_table <- function(dat, voi, est = "Estimate", se = "StdErr", uppe
 #' @export
 #' @return character vector with all numbers formated
 comma <- function(x) format(x, digits = 2, big.mark = ",")
+
+#' Impute missing values in DNAm matrix
+#' 
+#' @param x DNAm matrix
+#' @param FUN function to apply to "x" to get values to impute missing values
+#' 
+#' @export
+#' @return imputed DNAm matrix
+impute_matrix <- function(x, FUN = function(x) matrixStats::rowMedians(x, na.rm = T)) 
+{
+    idx <- which(is.na(x), arr.ind = T)
+    if (length(idx) > 0) {
+        v <- FUN(x)
+        v[which(is.na(v))] <- FUN(matrix(v, nrow = 1))
+        x[idx] <- v[idx[, "row"]]
+    }
+    return(x)
+}
