@@ -210,7 +210,7 @@ scatter.thinning <- function(x,y,resolution=100,max.per.cell=100) {
 #' 
 #' @param df data.frame containing your results
 #' @param hlight a vector containing any SNPs that need highlighting
-#' @param col colours for the plot (default = RColorBrewer::brewer.pal(9, "Greys")[c(4,7)])
+#' @param col colours for the plot (default = RColorBrewer::brewer.pal(9, "Greys")[c(5,9)])
 #' @param title title of the plot
 #' @param SNP name of the column corresponding to SNPs
 #' @param CHR name of the column corresponding to chromosome number
@@ -220,12 +220,14 @@ scatter.thinning <- function(x,y,resolution=100,max.per.cell=100) {
 #' @param sugg the "suggestive significance threshold"
 #' @param lab whether or not to add labels to the sites on the plot
 #' @param colour coloured plot?
+#' @param remove_chr_labs chromosome labels to remove from the x-axis. default = NULL
 #' 
 #' @export
 #' @return manhattan plot
 gg.manhattan <- function(df, hlight, col = "default",
 						 title = "Manhattan", SNP = "SNP", CHR = "CHR", BP = "BP", P = "P",
-						 sig = 5e-8, sugg = 1e-5, lab = FALSE, colour = TRUE){
+						 sig = 5e-8, sugg = 1e-5, lab = FALSE, colour = TRUE, 
+						 remove_chr_labs = NULL){
   # format df
   df.tmp <- df %>% 
     
@@ -248,8 +250,8 @@ gg.manhattan <- function(df, hlight, col = "default",
     dplyr::mutate( is_highlight := ifelse(!! as.name(SNP) %in% hlight, "yes", "no")) %>%
     dplyr::mutate( is_annotate := ifelse(!! as.name(SNP) %in% hlight, "yes", "no"))
 
-    # change CHR to a factor
-    df.tmp[[CHR]] <- as.factor(df.tmp[[CHR]])
+  # change CHR to a factor
+  df.tmp[[CHR]] <- as.factor(df.tmp[[CHR]])
 
   # thin the scatter plot
   selection.idx <- scatter.thinning(x = df.tmp$BPcum, y = -log10(df.tmp[[P]]), resolution=100, max.per.cell=100)
@@ -259,18 +261,24 @@ gg.manhattan <- function(df, hlight, col = "default",
 
   # sort the colour out
   if (col == "default") {
-  	col <- RColorBrewer::brewer.pal(9, "Greys")[c(4,7)]	
+  	col <- RColorBrewer::brewer.pal(9, "Greys")[c(5,9)]	
   }
   
   # for the colour later on
   chr_n <- length(unique(df.select[[CHR]]))
 
   # get chromosome center positions for x-axis
-  axisdf <- df.select %>% dplyr::group_by_at(CHR) %>% dplyr::summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
+  axisdf <- df.select %>% 
+  	dplyr::group_by_at(CHR) %>% 
+  	dplyr::summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
+
+ 	if (!is.null(remove_chr_labs)) {
+ 		axisdf[[CHR]] <- ifelse(axisdf[[CHR]] %in% remove_chr_labs, "", axisdf[[CHR]])
+ 	}
 
   p <- ggplot2::ggplot(df.select, aes(x = BPcum, y = stat)) +
     # Show all points
-    ggplot2::geom_point(aes_string(color = CHR), alpha=0.8, size=2) +
+    ggplot2::geom_point(aes_string(color = CHR), alpha=0.8, size=1) +
     ggplot2::scale_color_manual(values = rep_len(col, length.out = chr_n)) +
 
     # custom axes:

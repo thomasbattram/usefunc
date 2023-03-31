@@ -16,7 +16,8 @@ gg.manhattan(
   sig = 5e-08,
   sugg = 1e-05,
   lab = FALSE,
-  colour = TRUE
+  colour = TRUE,
+  remove_chr_labs = NULL
 )
 }
 \arguments{
@@ -24,7 +25,7 @@ gg.manhattan(
 
 \item{hlight}{a vector containing any SNPs that need highlighting}
 
-\item{col}{colours for the plot (default = RColorBrewer::brewer.pal(9, "Greys")[c(4,7)])}
+\item{col}{colours for the plot (default = RColorBrewer::brewer.pal(9, "Greys")[c(5,9)])}
 
 \item{title}{title of the plot}
 
@@ -43,6 +44,8 @@ gg.manhattan(
 \item{lab}{whether or not to add labels to the sites on the plot}
 
 \item{colour}{coloured plot?}
+
+\item{remove_chr_labs}{chromosome labels to remove from the x-axis. default = NULL}
 }
 \value{
 manhattan plot
